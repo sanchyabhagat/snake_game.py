@@ -1,4 +1,5 @@
 #!python2
+
 import curses
 import random
 
@@ -27,7 +28,7 @@ snake = [
     [snake_y, snake_x-2]
 ]
 
-print (str(snake_x) + ' ' + str(snake_y))
+#print (str(snake_x) + ' ' + str(snake_y))
 
 food = [screen_height/2, screen_width/2]
 window.addch(food[0], food[1], curses.ACS_PI)
@@ -36,25 +37,63 @@ window.addch(food[0], food[1], curses.ACS_PI)
 # initial direction of snake
 key = curses.KEY_RIGHT
 
-#Start game here
-while True:
-    #get key pressed
-    key_pressed = window.getch()
-    if key_pressed == -1:
-        key = key
-    else:
-        key = key_pressed
 
-    #game lost
-    if snake[0][0] in [0, screen_height] or snake[0][1] in [0, screen_width] or snake[0] in snake[1:]:
-        curses.endwin()
-        quit()
+def startgame(window, key, food, screen, snake):
+    # Start game here
+    score = 0
+    while True:
+        # get key pressed
+        key_pressed = window.getch()
+        if key_pressed == -1:
+            key = key
+        else:
+            key = key_pressed
 
-    # determine the new head position of the snake
-    newHeadPosition = [snake[0][0], snake[0][1]]
+        # game lost
+        if snake[0][0] in [0, screen_height] or snake[0][1] in [0, screen_width] or snake[0] in snake[1:]:
+            curses.endwin()
+            print ("\nGame over!! The score was : " + str(score))
+            quit()
 
-    # update the new head according to key press
+        # determine the new head position of the snake
+        newHeadPosition = [snake[0][0], snake[0][1]]
 
+        # update the new head according to key press
+        newHeadPosition = getnewheadposition(key, newHeadPosition)
+        # if key == curses.KEY_DOWN:
+        #     newHeadPosition[0] += 1
+        # elif key == curses.KEY_UP:
+        #     newHeadPosition[0] -= 1
+        # elif key == curses.KEY_LEFT:
+        #     newHeadPosition[1] -= 1
+        # elif key == curses.KEY_RIGHT:
+        #     newHeadPosition[1] += 1
+
+        # add the new head
+        snake.insert(0, newHeadPosition)
+
+        # check if snake ran into the food
+        if snake[0] == food:
+            score = score + 1
+            food = None
+            while food is None:
+                newFoodPosition = [
+                    random.randint(1, screen_height - 1),
+                    random.randint(1, screen_width - 1)
+                ]
+                food = newFoodPosition if newFoodPosition not in snake else None
+
+            # add the food again
+            window.addch(food[0], food[1], curses.ACS_PI)
+        else:
+            # take the tail out to update it
+            snakeTail = snake.pop()
+            window.addch(snakeTail[0], snakeTail[1], ' ')
+
+        window.addch(snake[0][0], snake[0][1], curses.ACS_CKBOARD)
+
+'''Update the head position according to input'''
+def getnewheadposition(key, newHeadPosition):
     if key == curses.KEY_DOWN:
         newHeadPosition[0] += 1
     elif key == curses.KEY_UP:
@@ -64,24 +103,8 @@ while True:
     elif key == curses.KEY_RIGHT:
         newHeadPosition[1] += 1
 
-    #add the new head
-    snake.insert(0, newHeadPosition)
+    return newHeadPosition
 
-    #check if snake ran into the food
-    if snake[0] == food:
-        food = None
-        while food is None:
-            newFoodPosition = [
-                random.randint(1, screen_height-1),
-                random.randint(1, screen_width-1)
-            ]
-            food = newFoodPosition if newFoodPosition not in snake else None
+''' Start the main game logic'''
+startgame(window, key, food, screen, snake)
 
-        # add the food again
-        window.addch(food[0], food[1], curses.ACS_PI)
-    else:
-        #take the tail out to update it
-        snakeTail = snake.pop()
-        window.addch(snakeTail[0], snakeTail[1], ' ')
-
-    window.addch(snake[0][0], snake[0][1], curses.ACS_CKBOARD)

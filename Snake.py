@@ -60,16 +60,6 @@ def startgame(window, key, food, screen, snake):
 
         # update the new head according to key press
         newHeadPosition = getnewheadposition(key, newHeadPosition)
-        # if key == curses.KEY_DOWN:
-        #     newHeadPosition[0] += 1
-        # elif key == curses.KEY_UP:
-        #     newHeadPosition[0] -= 1
-        # elif key == curses.KEY_LEFT:
-        #     newHeadPosition[1] -= 1
-        # elif key == curses.KEY_RIGHT:
-        #     newHeadPosition[1] += 1
-
-        # add the new head
         snake.insert(0, newHeadPosition)
 
         # check if snake ran into the food

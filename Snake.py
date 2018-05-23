@@ -79,4 +79,9 @@ while True:
 
         # add the food again
         window.addch(food[0], food[1], curses.ACS_PI)
-    
+    else:
+        #take the tail out to update it
+        snakeTail = snake.pop()
+        window.addch(snakeTail[0], snakeTail[1], ' ')
+
+    window.addch(snake[0][0], snake[0][1], curses.ACS_CKBOARD)
